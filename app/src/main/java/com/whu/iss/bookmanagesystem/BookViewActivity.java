@@ -18,6 +18,9 @@ import android.widget.ImageView;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * @version 1.0
  * @author kelei
@@ -26,7 +29,7 @@ import android.widget.Toast;
 
 public class BookViewActivity extends Activity {
     private Intent intent;
-    private EditText tv_rate,tv_price,tv_title,tv_author,tv_publisher,tv_date,tv_isbn,tv_summary;
+    private EditText tv_rate,tv_price,tv_title,tv_author,tv_publisher,tv_date,tv_isbn;
     private EditText tv_page,tv_tags;
     private Button modifyButton;
     private Button submitButton;
@@ -51,7 +54,7 @@ public class BookViewActivity extends Activity {
         tv_publisher=(EditText)findViewById(R.id.bookview_publisher);
         tv_date=(EditText)findViewById(R.id.bookview_publisherdate);
         tv_isbn=(EditText)findViewById(R.id.bookview_isbn);
-        tv_summary=(EditText)findViewById(R.id.bookview_summary);
+     //   tv_summary=(EditText)findViewById(R.id.bookview_summary);
         tv_rate=(EditText)findViewById(R.id.bookview_rate);
         tv_price=(EditText)findViewById(R.id.bookview_price);
         tv_page=(EditText)findViewById(R.id.bookview_pages);
@@ -79,10 +82,11 @@ public class BookViewActivity extends Activity {
        submitButton.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("ShowToast") @Override
             public void onClick(View v) {
+               // String regex="[0-9|.]+";
                 // TODO Auto-generated method stub
                 String postContent="code="+book.getISBN()+"&bookname="+book.getTitle()+"&years="+book.getPublishDate()
-                        +"&price="+book.getPrice().substring(0,book.getPrice().length()-1)+"&pic="+book.getMapUrl()+"&type=0";
-                String url="http://software.whu.edu.cn:8080/quick4j/rest/books/books";
+                        +"&price="+transfer(book.getPrice().substring(0,book.getPrice().length()-1))+"&pic="+book.getMapUrl()+"&type=0";
+                String url="http://221.180.249.223:8888/quick4j/rest/books/books";
 
                 boolean postSuccess=HttpRequest.sendPost(url, postContent);
                 if(postSuccess){
@@ -116,8 +120,6 @@ public class BookViewActivity extends Activity {
         tv_date.setEnabled(false);
         tv_isbn.setText("ISBN:"+book.getISBN());
         tv_isbn.setEnabled(false);
-        tv_summary.setText(book.getSummary().substring(0,88)+"....");
-        tv_summary.setEnabled(false);
         tv_page.setText("页数:"+book.getPage());
         tv_page.setEnabled(false);
         tv_price.setText("定价:"+book.getPrice());
@@ -126,5 +128,38 @@ public class BookViewActivity extends Activity {
         tv_tags.setEnabled(false);
         image.setImageBitmap(book.getBitmap()); 
 
+    }
+
+
+//    private String getString(String str, String regx) {
+//      //  str=str.replaceAll("[\\pP\\p{Punct}]" , "");
+//        //1.将正在表达式封装成对象Patten 类来实现
+//        Pattern pattern = Pattern.compile(regx);
+//        //2.将字符串和正则表达式相关联
+//        Matcher matcher = pattern.matcher(str);
+//        //3.String 对象中的matches 方法就是通过这个Matcher和pattern来实现的。
+//        String res="";
+//        System.out.println(matcher.matches());
+//        //查找符合规则的子串
+//        while(matcher.find()){
+//            //获取 字符串
+//            System.out.println(matcher.group());
+//            //获取的字符串的首位置和末位置
+//          //  System.out.println(matcher.start()+"--"+matcher.end());
+//            res+=matcher.group();
+//        }
+//        return res;
+ //   }
+    private String transfer(String m){
+        char []b=m.toCharArray();
+        String result="";
+        for (int i = 0; i < b.length; i++)
+        {
+            if (("0123456789.").indexOf(b[i] + "") != -1)
+            {
+                result += b[i];
+            }
+        }
+        return result;
     }
 }

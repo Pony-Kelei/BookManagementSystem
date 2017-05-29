@@ -53,15 +53,15 @@ public class MainActivity extends AppCompatActivity {
         t1=(TextView)findViewById(R.id.textView);
         scanButton=(Button) findViewById(R.id.button1);
         queryButton=(Button)findViewById(R.id.button2);
+        new MainActivity.ChangTextViewThread().start();
 
-
-        String url="http://software.whu.edu.cn:8080/quick4j/rest/books/number";
-        bookNum=HttpRequest.sendGet(url);
-
-        if(bookNum.isEmpty()){
-            bookNum="0";
-        }
-        t1.setText(Html.fromHtml("目前系统内共有图书<font color=\"#FF0000\"><b><tt>"+bookNum+"</tt></b></font>本"));
+//        String url="http://221.180.249.223:8888/quick4j/rest/books/number";
+//        bookNum=HttpRequest.sendGet(url);
+//
+//        if(bookNum.isEmpty()){
+//            bookNum="0";
+//        }
+     //   t1.setText(Html.fromHtml("目前系统内共有图书<font color=\"#FF0000\"><b><tt>"+bookNum+"</tt></b></font>本"));
 
         //接收来自下载线程的消息
         handler=new Handler(){
@@ -69,17 +69,33 @@ public class MainActivity extends AppCompatActivity {
             public void handleMessage(Message msg) {
                 // TODO Auto-generated method stub
                 super.handleMessage(msg);
-                Book book= (Book)msg.obj;
-                //进度条消失
-                progressDialog.dismiss();
-                if(book==null){
-                    Toast.makeText(MainActivity.this, "没有找到这本书", Toast.LENGTH_LONG).show();
-                }
-                else{
-                    Intent intent=new Intent(MainActivity.this,BookViewActivity.class);
-                    //通过Intent 传递 Object，需要让该实体类实现Parceable接口
-                    intent.putExtra(Book.class.getName(),book);
-                    startActivity(intent);
+                switch (msg.what){
+                    case 1:
+                        Book book= (Book)msg.obj;
+                        //进度条消失
+                        progressDialog.dismiss();
+                        if(book==null){
+                            Toast.makeText(MainActivity.this, "没有找到这本书", Toast.LENGTH_LONG).show();
+                            Intent intent = getIntent();
+                            finish();
+                            startActivity(intent);
+                        }
+                        else{
+                            Intent intent=new Intent(MainActivity.this,BookViewActivity.class);
+                            //通过Intent 传递 Object，需要让该实体类实现Parceable接口
+                            intent.putExtra(Book.class.getName(),book);
+                            startActivity(intent);
+                        }
+                        break;
+                    case 2:
+                        String num=(String)msg.obj;
+                        if(num.isEmpty()){
+                            bookNum="0";
+                        }
+                        t1.setText(Html.fromHtml("目前系统内共有图书<font color=\"#FF0000\"><b><tt>"+bookNum+"</tt></b></font>本"));
+                        break;
+                    default:
+                        Toast.makeText(MainActivity.this, "异常", Toast.LENGTH_LONG).show();
                 }
             }
         };
@@ -153,10 +169,26 @@ public class MainActivity extends AppCompatActivity {
                 Book book=new BookUtil().parseBookInfo(result);
                 //给主线程UI界面发消息，提醒下载信息，解析信息完毕
                 msg.obj=book;
+                msg.what=1;
             } catch (Exception e) {
                 e.printStackTrace();
             }
             handler.sendMessage(msg);
+        }
+    }
+
+    public class ChangTextViewThread extends Thread{
+        public void run(){
+            String url="http://221.180.249.223:8888/quick4j/rest/books/number";
+            Message m=Message.obtain();
+            try{
+                bookNum=HttpRequest.sendGet(url);
+                m.obj=bookNum;
+                m.what=2;
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+           handler.sendMessage(m);
         }
     }
 
