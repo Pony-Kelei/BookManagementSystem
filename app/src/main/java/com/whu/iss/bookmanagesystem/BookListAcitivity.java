@@ -99,21 +99,12 @@ public class BookListAcitivity extends Activity {
                         String []priceArray=prices.split(",");
                         String []idArray=ids.split(",");
 
-                        for(int i=0;i<titleArray.length;i++){
-                            Book b=new Book();
-                            b.setTitle(titleArray[i]);
-                            b.setPrice(priceArray[i]);
-                            b.setPublishDate(dateArray[i]);
-                            b.setId(idArray[i]);
-                            books.add(b);
-                        }
-
-                        for(Book p : books){
+                        for(int i=0;i<dateArray.length;i++){
                             HashMap<String, Object> item = new HashMap<String, Object>();
-                            item.put("id",p.getId());
-                            item.put("bookname", p.getTitle());
-                            item.put("price", p.getPrice());
-                            item.put("date", p.getPublishDate());
+                            item.put("id",idArray[i]);
+                            item.put("bookname",titleArray[i]);
+                            item.put("price", priceArray[i]);
+                            item.put("date", dateArray[i]);
                             data.add(item);
                         }
 //                m.obj=bookNum;
@@ -140,6 +131,9 @@ public class BookListAcitivity extends Activity {
         for(int i=0;i<jsonArray.length();i++){
             JSONObject user=(JSONObject) jsonArray.get(i);
             String userName=String.valueOf(user.get(key));
+            if(userName.isEmpty()){
+                userName="NULL";
+            }
             if(i==jsonArray.length()-1){
                 loginNames+=userName;
             }else{
