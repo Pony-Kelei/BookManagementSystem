@@ -145,6 +145,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    protected void onResume(){
+        super.onResume();
+        new MainActivity.ChangTextViewThread().start();
+    }
     /**
      * <a href="http://fangjie.sinaapp.com">http://fangjie.sinaapp.com</a>
      * @version 1.0
