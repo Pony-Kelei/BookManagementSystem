@@ -1,6 +1,7 @@
 package com.whu.iss.bookmanagesystem;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -28,6 +29,8 @@ public class BookListAcitivity extends Activity {
     private Handler handler;
     List<HashMap<String, Object>> data = new ArrayList<HashMap<String,Object>>();
     ListView listView;
+    private ProgressDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,11 +45,16 @@ public class BookListAcitivity extends Activity {
 
         listView = (ListView) this.findViewById(R.id.listView);
 
+        progressDialog=new ProgressDialog(this);
+        progressDialog.setMessage("请稍候，正在读取信息...");
+        progressDialog.show();
+
         new BookListAcitivity.LoadListThread().start();
 
         handler=new Handler(){
             @Override
             public void handleMessage(Message msg) {
+                progressDialog.dismiss();
                 if(msg.what==1){
                     //创建SimpleAdapter适配器将数据绑定到item显示控件上
                     SimpleAdapter adapter = new SimpleAdapter(BookListAcitivity.this, data, R.layout.item,

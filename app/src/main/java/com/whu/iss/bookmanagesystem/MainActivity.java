@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
             @SuppressLint("ShowToast") @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-                Toast.makeText(MainActivity.this,"查询中，请稍后",Toast.LENGTH_SHORT ).show();
+             //   Toast.makeText(MainActivity.this,"查询中，请稍后",Toast.LENGTH_SHORT ).show();
                 Intent intent=new Intent(MainActivity.this,BookListAcitivity.class);
                 startActivity(intent);
             }
